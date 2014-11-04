@@ -1,0 +1,21 @@
+
+{
+    "name": "tatemz/genesis-layouts",
+    "description": "Customize your page and post-type layouts with an easy to code settings.",
+    "homepage": "https://github.com/tatemz/genesis-layouts",
+    "keywords": ["wordpress","plugins", "theme", "library", "genesis"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "A. Tate Barber <tate@barber.so>",
+            "homepage": "https://github.com/tatemz",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "class-genesis-page-layouts.php",
+            "class-genesis-post-layouts.php"
+        ]
+    }
+}
