@@ -14,8 +14,9 @@
     ],
     "autoload": {
         "files": [
-            "class-genesis-page-layouts.php",
-            "class-genesis-post-layouts.php"
+            "class-page-layouts.php",
+            "class-post-layouts.php",
+            "functions.php"
         ]
     }
 }

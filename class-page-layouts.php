@@ -1,8 +1,8 @@
 <?php
 
-namespace GoNear;
+namespace Genesis;
 
-class Genesis_Page_Layouts {
+class Page_Layouts {
 
     public static $instance = null;
 
@@ -20,7 +20,8 @@ class Genesis_Page_Layouts {
     }
 
     private function __construct() {
-        $this->init();
+        if ( function_exists( 'add_action' ) )
+            $this->init();
     }
 
     public function init() {

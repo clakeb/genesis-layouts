@@ -1,8 +1,8 @@
 <?php
 
-namespace GoNear;
+namespace Genesis;
 
-class Genesis_Post_Layouts {
+class Post_Layouts {
 
     public static $instance = null;
     public $current_settings = false;
@@ -17,7 +17,8 @@ class Genesis_Post_Layouts {
     }
 
     private function __construct() {
-        add_action( 'genesis_before', array( $this, 'init' ) );
+        if ( function_exists( 'add_action' ) )
+            add_action( 'genesis_before', array( $this, 'init' ) );
     }
 
     public function init() {
