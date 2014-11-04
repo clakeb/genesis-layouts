@@ -26,6 +26,7 @@ class Page_Layouts {
 
     public function init() {
         // Init Settings
+        $this->init_settings();
         add_action( 'after_setup_theme', array( $this, 'init_settings' ) );
         add_action( 'genesis_doctype', array( $this, 'init_settings' ), -1 );
 
