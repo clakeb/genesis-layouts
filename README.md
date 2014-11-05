@@ -6,7 +6,10 @@ I have been using Genesis for a long time and the more I progress in my programm
 
 ## Via Composer
 Run this inside your Genesis-based theme or plugin directory.
-    composer require tatemz/genesis-layouts dev-master
+
+```
+composer require tatemz/genesis-layouts dev-master
+```
 
 #How to Use Genesis Layouts
 
