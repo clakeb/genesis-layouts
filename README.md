@@ -537,7 +537,12 @@ array(
     'font_size'        => 1,
     'font_background'  => '#ffffff',
     'content_align'    => array( 'center', 'middle' ),
-    'background'       => array(),
+    'background'       => array(
+        'image'           => '',
+        'video'           => '',
+        'overlay'         => '#ffffff',
+        'overlay_opacity' => '0',
+    ),
     'atts'             => array(),
 );
 ```
