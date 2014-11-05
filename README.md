@@ -2,6 +2,16 @@
 
 I have been using Genesis for a long time and the more I progress in my programming abilities, I have found that it is difficult to maintain clean and orderly layouts within complex WordPress sites containing many design styles and custom post types. That is where Genesis Layouts comes in. With Genesis Layouts, you can use real SEO-friendly markup produced by the developers from StudioPress in any layout you need.
 
+* [Installation](#installation)
+* [How to Use Genesis Layouts](#how-to-use-genesis-layouts)
+  * [Features](#features)
+  * [Usage](#usage)
+    * [Conditions](#conditions)
+    * [Settings](#settings)
+      * [Post Layout Settings](#post-layout-settings)
+      * [Page Layout Settings](#page-layout-settings)
+
+
 # Installation
 
 ## Via Composer
@@ -11,7 +21,7 @@ Run this inside your Genesis-based theme or plugin directory.
 composer require tatemz/genesis-layouts dev-master
 ```
 
-#How to Use Genesis Layouts
+# How to Use Genesis Layouts
 
 # Features
 Genesis Layouts is divided into two parts, post (or rather post-type) layouts and page layouts.
