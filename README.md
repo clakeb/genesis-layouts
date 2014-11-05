@@ -24,6 +24,8 @@ Genesis Layouts is divided into two parts, post (or rather post-type) layouts an
 * Layouts are built and arranged in order of priority with the least prioritized occuring first in an array and the highest prioritized occuring last in an array.
 * When a condition is met, settings from one layout may be overridden when a second condition is met in higher priority.
 
+*Developer's Note: This package is meant to be a markup-first library. As such, it will only produce and rearrange markup. However, it will not customize or build out your stylesheets and user interfaces as they will inevitably vary from project to project.*
+
 # Usage
 To build a layout, simply filter a passed array via the two filter hooks: `custom_page_layouts` or `custom_post_layouts`.
 
@@ -462,7 +464,7 @@ This setting will activate whether to show or hide the secondary sidebar (`.side
 Possible values are: `true` | `false` | any string to create a new custom sidebar widget area
 
 #####footer_widgets
-*default: `8`*
+*default: `3`*
 
 This setting will activate the number of footer widgets to show (in numerical order) on a page.
 
@@ -518,3 +520,6 @@ array(
 This setting will set the items of `genesis_structural_wraps()` ('.wrap') to activate.
 
 Possible values are: `false` | any array of structural wrap ids
+
+### Post Layout Settings
+

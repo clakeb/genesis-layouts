@@ -215,7 +215,7 @@ class Page_Layouts {
             'show_content'            => true,
             'primary_sidebar'         => true,
             'secondary_sidebar'       => true,
-            'footer_widgets'          => 8,
+            'footer_widgets'          => 3,
             'show_footer'             => true,
             'footer_creds'            => true,
             'elements'                => array(),
