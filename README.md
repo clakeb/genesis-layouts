@@ -517,9 +517,27 @@ array(
 )
 ```
 
-This setting will set the items of `genesis_structural_wraps()` ('.wrap') to activate.
+This setting will set the items of `genesis_structural_wraps()` (`.wrap`) to activate.
 
 Possible values are: `false` | any array of structural wrap ids
 
-### Post Layout Settings
+### Page Sections
+Page Sections are how Genesis Layouts define large banners of content within a page. Page sections commonly have images or videos as background with content on top.
 
+Page sections have these settings by default:
+
+1. `font_size` | (*default*: `1`)
+2. `font_background` | (*default*: `'#ffffff'`)
+3. `content_align` | (*default*: `array( 'center', 'middle' )`)
+4. `background` | (*default*: `array()`)
+5. `atts` | (*default*: `array()`)
+
+```
+array(
+    'font_size'        => 1,
+    'font_background'  => '#ffffff',
+    'content_align'    => array( 'center', 'middle' ),
+    'background'       => array(),
+    'atts'             => array(),
+);
+```
