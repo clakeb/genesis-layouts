@@ -250,6 +250,8 @@ class Page_Layouts {
 
         add_theme_support( 'genesis-footer-widgets', $this->max_footer_widgets );
 
+        add_theme_support( 'genesis-responsive-viewport' );
+
         return $this->current_settings;
     }
 
