@@ -535,8 +535,10 @@ class Page_Layouts {
 
         $sidebar_id = ( is_string( $primary_sidebar ) ) ? $primary_sidebar : 'sidebar';
 
+        $sidebar_name = ucwords( preg_replace( '/[-_]+/', ' ', $sidebar_id ) )
+
         if ( ! dynamic_sidebar( $sidebar_id ) && current_user_can( 'edit_theme_options' )  ) {
-            genesis_default_widget_area_content( __( 'Primary Sidebar Widget Area', 'genesis' ) );
+            genesis_default_widget_area_content( __( $sidebar_name . ' Widget Area', 'genesis' ) );
         }
     }
 
@@ -547,10 +549,12 @@ class Page_Layouts {
 
         extract( $this->current_settings );
 
-        $sidebar_id = ( is_string( $primary_sidebar ) ) ? $primary_sidebar : 'sidebar-alt';
+        $sidebar_id = ( is_string( $secondary_sidebar ) ) ? $secondary_sidebar : 'sidebar-alt';
+
+        $sidebar_name = ucwords( preg_replace( '/[-_]+/', ' ', $sidebar_id ) )
 
         if ( ! dynamic_sidebar( $sidebar_id ) && current_user_can( 'edit_theme_options' )  ) {
-            genesis_default_widget_area_content( __( 'Primary Sidebar Widget Area', 'genesis' ) );
+            genesis_default_widget_area_content( __( $sidebar_name . ' Widget Area', 'genesis' ) );
         }
     }
 
