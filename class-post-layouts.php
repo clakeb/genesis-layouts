@@ -551,7 +551,7 @@ class Post_Layouts {
 
         $img = genesis_get_image( $img_args );
 
-        if ( array_key_exists( $size, $_wp_additional_image_sizes ) ) {
+        if ( $_wp_additional_image_sizes && array_key_exists( $size, $_wp_additional_image_sizes ) ) {
             $width = 'width:' . $_wp_additional_image_sizes[ $size ]['width'] . 'px;';
         } else {
             $width = '';
