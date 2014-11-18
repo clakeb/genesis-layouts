@@ -259,9 +259,7 @@ class Page_Layouts {
 
         extract( $this->current_settings );
 
-        if ( $body_class ) {
-            add_filter( 'body_class', array( $this, 'body_class' ) );
-        }
+        add_filter( 'body_class', array( $this, 'body_class' ) );
 
         if ( $body_bg_image_src ) {
             add_filter( 'genesis_attr_body', array( $this, 'body_attr' ) );
@@ -361,6 +359,7 @@ class Page_Layouts {
     }
 
     public function custom_post_layouts( $layouts ) {
+        global $wp_the_query;
 
         if ( ! $this->current_settings ) {
             return $layouts;
@@ -521,6 +520,8 @@ class Page_Layouts {
     }
 
     public function get_background( $args ) {
+        global $wp_embed;
+
         $defaults = array(
             'image'           => '',
             'video'           => '',
@@ -539,17 +540,15 @@ class Page_Layouts {
 
                 $output .= sprintf( '<img src="%s">', $image );
             } else if ( $video ) {
-                $basename   = basename( $video );
-                $path       = preg_replace( '/\\.[^.\\s]{3,4}$/', '', $video );
-                $file_types = array( 'mp4', 'webm', 'ogg' );
+                $parse = parse_url( $video );
 
-                foreach ( $file_types as $type ) {
-                    $output .= sprintf( '<source src="%s.%s" type="video/%s">', $path, $type, $type );
+                if ( in_array( $parse['host'], array( 'vimeo.com', 'youtube.com' ) ) ) {
+                    $output .= $wp_embed->run_shortcode( sprintf( '[embed]%s[/embed]', $video ) );
+                } else {
+                    $output .= do_shortcode( sprintf( '[video src="%s"]', $video ) );
                 }
 
-                $output .= 'Sorry, your browser does not support the video tag.';
-
-                $output = sprintf( '<video loop muted autoplay>%s</video>', $output );
+                $output = sprintf( '<div class="flex-video">%s</div>', $output );
             }
         }
 
@@ -566,8 +565,7 @@ class Page_Layouts {
 
         $defaults = array(
             'font_size'        => 1,
-            'font_background'  => '#00ff00',
-            'content_align'    => array( 'center', 'middle' ),
+            'content_align'    => array( 'top', 'center' ),
             'background'       => array(),
             'atts'             => array(),
         );
@@ -592,7 +590,7 @@ class Page_Layouts {
             $atts['class'] = '';
         }
 
-        $atts['class'] .= ' page-section';
+        $atts['class'] .= ' page-section content-image-section';
 
         if ( $font_size ) {
             $atts['class'] .= sprintf( ' font-%sx', str_replace( '.', '-', $font_size ) );
@@ -615,7 +613,10 @@ class Page_Layouts {
 
             $atts         = genesis_attr( 'page-section', $atts );
 
-            $output       = sprintf( '<div %s>%s%s</div>', $atts, $background, $content );
+            $wrap_open    = genesis_structural_wrap( 'page-section', 'open', false );
+            $wrap_close   = genesis_structural_wrap( 'page-section', 'close', false );
+
+            $output       = sprintf( '<div %s>%s%s%s%s</div>', $atts, $wrap_open, $background, do_shortcode( $content ), $wrap_close );
         }
 
         return $output;
