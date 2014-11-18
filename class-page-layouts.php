@@ -370,11 +370,25 @@ class Page_Layouts {
 
         $layouts[] = array(
             'settings' => array(
-                'show_title' => $show_page_title,
+                'show_title'   => $show_page_title,
                 'show_content' => $show_content,
             ),
             'condition' => array(
                 array(
+                    array(
+                        'var'      => 'ID',
+                        'var_type' => 'post_property',
+                        'params'   => array(),
+                        'operator' => '==',
+                        'value'    => $wp_the_query->queried_object_id,
+                    ),
+                    array(
+                        'var'      => 'post_type',
+                        'var_type' => 'post_property',
+                        'params'   => array(),
+                        'operator' => '==',
+                        'value'    => 'page',
+                    ),
                     array(
                         'var'      => 'is_main_query',
                         'var_type' => 'function',
