@@ -32,7 +32,6 @@ class Page_Layouts {
 
         // Format & Reset Page
         add_action( 'genesis_doctype', array( $this, 'format_page' ), 0 );
-        add_action( 'genesis_after', array( $this, 'reset_page' ), 9999 );
 
         // Add Custom Post Layout For This Page
         add_filter( 'custom_post_layouts', array( $this, 'custom_post_layouts' ), 15 );
@@ -345,75 +344,16 @@ class Page_Layouts {
         }
     }
 
-    public function reset_page() {
-
-        if ( ! $this->current_settings ) {
-            return;
-        }
-
-        extract( $this->current_settings );
-
-        if ( $body_class ) {
-            remove_filter( 'body_class', array( $this, 'body_class' ) );
-        }
-
-        if ( $show_site_title ) {
-            remove_action( 'genesis_site_title', 'genesis_seo_site_title' );
-        } else {
-            add_action( 'genesis_site_title', 'genesis_seo_site_title' );
-        }
-
-        if ( $show_site_description ) {
-            remove_action( 'genesis_site_description', 'genesis_seo_site_description' );
-        } else {
-            add_action( 'genesis_site_description', 'genesis_seo_site_description' );
-        }
-
-        add_action( 'genesis_after_header', 'genesis_do_nav' );
-        if ( $show_site_description ) {
-            remove_action( $elements['primary_nav'][0], 'genesis_do_nav', $elements['primary_nav'][1] );
-        }
-
-        add_action( 'genesis_after_header', 'genesis_do_nav' );
-        if ( $show_site_description ) {
-            remove_action( $elements['secondary_nav'][0], 'genesis_do_subnav', $elements['secondary_nav'][1] );
-        }
-
-        if ( ! $show_header_widget_area ) {
-            unregister_sidebar( 'header-right' );
-        }
-
-        if ( $page_layout ) {
-            remove_filter( 'genesis_pre_get_option_site_layout', '__genesis_return_' . str_replace( '-', '_', $page_layout ) );
-        }
-
-        if ( ! $show_footer ) {
-            add_action( 'genesis_footer', 'genesis_footer_markup_open', 5 );
-            add_action( 'genesis_footer', 'genesis_do_footer' );
-            add_action( 'genesis_footer', 'genesis_footer_markup_close', 15 );
-        }
-
-        add_action( 'genesis_sidebar', 'genesis_do_sidebar' );
-        if ( $primary_sidebar ) {
-            remove_action( 'genesis_sidebar', array( $this, 'do_sidebar' ) );
-        }
-
-        add_action( 'genesis_sidebar_alt', 'genesis_do_sidebar_alt' );
-        if ( $primary_sidebar ) {
-            remove_action( 'genesis_sidebar_alt', array( $this, 'do_sidebar_alt' ) );
-        }
-
-        if ( $footer_widgets ) {
-            add_theme_support( 'genesis-footer-widgets', ( is_bool( $footer_widgets ) ) ? 4 : $footer_widgets );
-        }
-    }
-
     public function body_class( $classes ) {
         if ( ! $this->current_settings ) {
             return;
         }
 
         extract( $this->current_settings );
+
+        if ( $footer_widgets && isset( $footer_widgets ) && is_numeric( $footer_widgets ) ) {
+            $classes[] = 'footer-widgets-' . $footer_widgets;
+        }
 
         if ( $body_class ) {
             $classes[] = $body_class;
