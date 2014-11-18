@@ -2,24 +2,40 @@
 
 I have been using Genesis for a long time and the more I progress in my programming abilities, I have found that it is difficult to maintain clean and orderly layouts within complex WordPress sites containing many design styles and custom post types. That is where Genesis Layouts comes in. With Genesis Layouts, you can use real SEO-friendly markup produced by the developers from StudioPress in any layout you need.
 
+* [Installation](#installation)
+* [How to Use Genesis Layouts](#how-to-use-genesis-layouts)
+  * [Features](#features)
+  * [Usage](#usage)
+    * [Conditions](#conditions)
+    * [Settings](#settings)
+      * [Post Layout Settings](#post-layout-settings)
+      * [Page Layout Settings](#page-layout-settings)
+      * [ACF](#advanced-custom-fields)
+
+
 # Installation
 
 ## Via Composer
 Run this inside your Genesis-based theme or plugin directory.
-    composer require tatemz/genesis-layouts dev-master
 
-#How to Use Genesis Layouts
+```
+composer require tatemz/genesis-layouts dev-master
+```
+
+# How to Use Genesis Layouts
 
 # Features
 Genesis Layouts is divided into two parts, post (or rather post-type) layouts and page layouts.
 
-* Post layouts can best be described as any post type that is output as markup **inside** a loop. Naturally, this can be a `page` post type, a `post` post type, or any other WordPress custom post type.
-* Page layouts handle any markup **outside** of a loop. One caveat is that a few page layout settings can still effect the loop of a `page` post type within an `is_singular()` view.
+1. Post layouts can best be described as any post type that is output as markup **inside** a loop. Naturally, this can be a `page` post type, a `post` post type, or any other WordPress custom post type.
+2. Page layouts handle any markup **outside** of a loop. One caveat is that a few page layout settings can still effect the loop of a `page` post type within an `is_singular()` view.
 
-* A "layout" has two primary features: an array of `settings` and a `condition` or rule.
+* A "layout" has two primary features: an array of `settings` and a `condition` or ruleset.
 * Each group of `settings` within a layout can be specified to only apply  when a certain `condition` or rule is met.
 * Layouts are built and arranged in order of priority with the least prioritized occuring first in an array and the highest prioritized occuring last in an array.
 * When a condition is met, settings from one layout may be overridden when a second condition is met in higher priority.
+
+*Developer's Note: This package is meant to be a markup-first library. As such, it will only produce and rearrange markup. However, it will not customize or build out your stylesheets and user interfaces as they will inevitably vary from project to project.*
 
 # Usage
 To build a layout, simply filter a passed array via the two filter hooks: `custom_page_layouts` or `custom_post_layouts`.
@@ -44,6 +60,25 @@ function build_custom_post_layouts( $post_layouts ) {
 
     return $post_layouts;
 }
+```
+
+Another way to build a layout is to output a unique loop directly by attaching layout settings to a specific query via the custom `loop_layout()` function provided.
+
+```
+$query_args = array(
+    'post_type'      => 'custom_post_type',
+    'posts_per_page' => -1,
+);
+
+$settings = array(
+    'loop_wrap_class' => 'my-custom-loop',
+    'show_content'    => false,
+    'show_meta'       => false,
+    'show_info'       => false,
+);
+
+$output = \Genesis\loop_layout( $query_args, $settings );
+
 ```
 
 # Conditions
@@ -203,6 +238,29 @@ This setting will activate whether or not to link the featured image to the sing
 
 Possible values are: `true` | `false`
 
+#####default_thumbnail
+*default: `false`*
+
+This setting will activate whether or not  provide a fallback for the featured image.
+
+To provide a default thumbnail, you must provide an array of two possible outcomes: `html` and `url`. See the Genesis function, `genesis_get_image()`.
+
+```
+array(
+    'html' => '<img class="entry-image" src="http://domain.com/path/to/source.jpg">',
+    'url'  => 'http://domain.com/path/to/source.jpg',
+)
+```
+
+Possible values are: `false` | an array containing the `html` and `url` fallbacks
+
+#####thumbnail_format
+*default: `'html'`*
+
+This setting will select the type of format to the featured image will be output. See the Genesis function, `genesis_get_image()`.
+
+Possible values are: `'html'` | `'url'`
+
 #####show_title
 *default: `true`*
 
@@ -274,7 +332,7 @@ Possible values are: any string of text
 
 This setting will override the text of the read more link (`.more-link`) of a post. *(Note: setting to false will deactivate the read more link.)*
 
-Possible values are: any string of text
+Possible values are: `false` | any string of text
 
 #####read_more_wrap
 *default: `true`*
@@ -394,7 +452,7 @@ This setting will activate whether to show or hide the secondary navigation (`.n
 
 Possible values are: `true` | `false`
 
-#####show_header_widget_are
+#####show_header_widget_area
 *default: `true`*
 
 This setting will activate whether to show or hide the header right widget area (`.header-widget-area`) element of a page.
@@ -459,7 +517,7 @@ This setting will activate whether to show or hide the secondary sidebar (`.side
 Possible values are: `true` | `false` | any string to create a new custom sidebar widget area
 
 #####footer_widgets
-*default: `8`*
+*default: `3`*
 
 This setting will activate the number of footer widgets to show (in numerical order) on a page.
 
@@ -487,7 +545,7 @@ Possible values are: `true` | `false` | any string to customize the credits text
 *default:*
 ```
 array(
-    'primary_nav' => array( 'genesis_after_header', 10 ),
+    'primary_nav'   => array( 'genesis_after_header', 10 ),
     'secondary_nav' => array( 'genesis_after_header', 10 ),
 )
 ```
@@ -512,6 +570,39 @@ array(
 )
 ```
 
-This setting will set the items of `genesis_structural_wraps()` ('.wrap') to activate.
+This setting will set the items of `genesis_structural_wraps()` (`.wrap`) to activate.
 
 Possible values are: `false` | any array of structural wrap ids
+
+### Page Sections
+Page Sections are how Genesis Layouts define large banners of content within a page. Page sections commonly have images or videos as background with content on top.
+
+Page sections have these settings by default:
+
+1. `action` | ( *default*: `array()` )
+2. `content` | ( *default*: `''` )
+3. `font_size` | ( *default*: `1` )
+4. `content_align` | ( *default*: `array( 'center', 'middle' )` )
+5. `background` | ( *default*: `array()` )
+6. `atts` | ( *default*: `array()` )
+
+```
+array(
+    'action'           => array( 'genesis_before_content_sidebar', 10 ),
+    'content'          => '',
+    'font_size'        => 1,
+    'content_align'    => array( 'center', 'middle' ),
+    'background'       => array(
+        'image'           => '',
+        'video'           => '',
+        'overlay'         => '#ffffff',
+        'overlay_opacity' => '0',
+    ),
+    'atts'             => array(),
+);
+```
+
+## Advanced Custom Fields
+This plugin contains a compatibility set for advanced custom fields by adding a user interface to WordPress pages for manipulating page layouts. To edit a single page's layout settings, simply use the fields provided. Alternatively, you can setup default settings in "Pages" submenu labeled "Page Defaults" in the admin dashboard.
+
+More ACF compatibility features to come...

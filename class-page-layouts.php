@@ -32,7 +32,6 @@ class Page_Layouts {
 
         // Format & Reset Page
         add_action( 'genesis_doctype', array( $this, 'format_page' ), 0 );
-        add_action( 'genesis_after', array( $this, 'reset_page' ), 9999 );
 
         // Add Custom Post Layout For This Page
         add_filter( 'custom_post_layouts', array( $this, 'custom_post_layouts' ), 15 );
@@ -126,7 +125,7 @@ class Page_Layouts {
         } else if ( $var_type == 'variable' ) {
             $var = $var;
         } else if ( $var_type == 'post_property' ) {
-            $var = $post->$var;
+            $var = ( $post ) ? $post->$var : false;
         }
 
         if ( $operator == "==" ) {
@@ -215,7 +214,7 @@ class Page_Layouts {
             'show_content'            => true,
             'primary_sidebar'         => true,
             'secondary_sidebar'       => true,
-            'footer_widgets'          => 8,
+            'footer_widgets'          => 3,
             'show_footer'             => true,
             'footer_creds'            => true,
             'elements'                => array(),
@@ -260,9 +259,7 @@ class Page_Layouts {
 
         extract( $this->current_settings );
 
-        if ( $body_class ) {
-            add_filter( 'body_class', array( $this, 'body_class' ) );
-        }
+        add_filter( 'body_class', array( $this, 'body_class' ) );
 
         if ( $body_bg_image_src ) {
             add_filter( 'genesis_attr_body', array( $this, 'body_attr' ) );
@@ -343,75 +340,16 @@ class Page_Layouts {
         }
     }
 
-    public function reset_page() {
-
-        if ( ! $this->current_settings ) {
-            return;
-        }
-
-        extract( $this->current_settings );
-
-        if ( $body_class ) {
-            remove_filter( 'body_class', array( $this, 'body_class' ) );
-        }
-
-        if ( $show_site_title ) {
-            remove_action( 'genesis_site_title', 'genesis_seo_site_title' );
-        } else {
-            add_action( 'genesis_site_title', 'genesis_seo_site_title' );
-        }
-
-        if ( $show_site_description ) {
-            remove_action( 'genesis_site_description', 'genesis_seo_site_description' );
-        } else {
-            add_action( 'genesis_site_description', 'genesis_seo_site_description' );
-        }
-
-        add_action( 'genesis_after_header', 'genesis_do_nav' );
-        if ( $show_site_description ) {
-            remove_action( $elements['primary_nav'][0], 'genesis_do_nav', $elements['primary_nav'][1] );
-        }
-
-        add_action( 'genesis_after_header', 'genesis_do_nav' );
-        if ( $show_site_description ) {
-            remove_action( $elements['secondary_nav'][0], 'genesis_do_subnav', $elements['secondary_nav'][1] );
-        }
-
-        if ( ! $show_header_widget_area ) {
-            unregister_sidebar( 'header-right' );
-        }
-
-        if ( $page_layout ) {
-            remove_filter( 'genesis_pre_get_option_site_layout', '__genesis_return_' . str_replace( '-', '_', $page_layout ) );
-        }
-
-        if ( ! $show_footer ) {
-            add_action( 'genesis_footer', 'genesis_footer_markup_open', 5 );
-            add_action( 'genesis_footer', 'genesis_do_footer' );
-            add_action( 'genesis_footer', 'genesis_footer_markup_close', 15 );
-        }
-
-        add_action( 'genesis_sidebar', 'genesis_do_sidebar' );
-        if ( $primary_sidebar ) {
-            remove_action( 'genesis_sidebar', array( $this, 'do_sidebar' ) );
-        }
-
-        add_action( 'genesis_sidebar_alt', 'genesis_do_sidebar_alt' );
-        if ( $primary_sidebar ) {
-            remove_action( 'genesis_sidebar_alt', array( $this, 'do_sidebar_alt' ) );
-        }
-
-        if ( $footer_widgets ) {
-            add_theme_support( 'genesis-footer-widgets', ( is_bool( $footer_widgets ) ) ? 4 : $footer_widgets );
-        }
-    }
-
     public function body_class( $classes ) {
         if ( ! $this->current_settings ) {
             return;
         }
 
         extract( $this->current_settings );
+
+        if ( $footer_widgets && isset( $footer_widgets ) && is_numeric( $footer_widgets ) ) {
+            $classes[] = 'footer-widgets-' . $footer_widgets;
+        }
 
         if ( $body_class ) {
             $classes[] = $body_class;
@@ -421,6 +359,7 @@ class Page_Layouts {
     }
 
     public function custom_post_layouts( $layouts ) {
+        global $wp_the_query;
 
         if ( ! $this->current_settings ) {
             return $layouts;
@@ -430,11 +369,25 @@ class Page_Layouts {
 
         $layouts[] = array(
             'settings' => array(
-                'show_title' => $show_page_title,
+                'show_title'   => $show_page_title,
                 'show_content' => $show_content,
             ),
             'condition' => array(
                 array(
+                    array(
+                        'var'      => 'ID',
+                        'var_type' => 'post_property',
+                        'params'   => array(),
+                        'operator' => '==',
+                        'value'    => $wp_the_query->queried_object_id,
+                    ),
+                    array(
+                        'var'      => 'post_type',
+                        'var_type' => 'post_property',
+                        'params'   => array(),
+                        'operator' => '==',
+                        'value'    => 'page',
+                    ),
                     array(
                         'var'      => 'is_main_query',
                         'var_type' => 'function',
@@ -567,6 +520,8 @@ class Page_Layouts {
     }
 
     public function get_background( $args ) {
+        global $wp_embed;
+
         $defaults = array(
             'image'           => '',
             'video'           => '',
@@ -585,17 +540,15 @@ class Page_Layouts {
 
                 $output .= sprintf( '<img src="%s">', $image );
             } else if ( $video ) {
-                $basename   = basename( $video );
-                $path       = preg_replace( '/\\.[^.\\s]{3,4}$/', '', $video );
-                $file_types = array( 'mp4', 'webm', 'ogg' );
+                $parse = parse_url( $video );
 
-                foreach ( $file_types as $type ) {
-                    $output .= sprintf( '<source src="%s.%s" type="video/%s">', $path, $type, $type );
+                if ( in_array( $parse['host'], array( 'vimeo.com', 'youtube.com' ) ) ) {
+                    $output .= $wp_embed->run_shortcode( sprintf( '[embed]%s[/embed]', $video ) );
+                } else {
+                    $output .= do_shortcode( sprintf( '[video src="%s"]', $video ) );
                 }
 
-                $output .= 'Sorry, your browser does not support the video tag.';
-
-                $output = sprintf( '<video loop muted autoplay>%s</video>', $output );
+                $output = sprintf( '<div class="flex-video">%s</div>', $output );
             }
         }
 
@@ -612,8 +565,7 @@ class Page_Layouts {
 
         $defaults = array(
             'font_size'        => 1,
-            'font_background'  => '#00ff00',
-            'content_align'    => array( 'center', 'middle' ),
+            'content_align'    => array( 'top', 'center' ),
             'background'       => array(),
             'atts'             => array(),
         );
@@ -638,7 +590,7 @@ class Page_Layouts {
             $atts['class'] = '';
         }
 
-        $atts['class'] .= ' page-section';
+        $atts['class'] .= ' page-section content-image-section';
 
         if ( $font_size ) {
             $atts['class'] .= sprintf( ' font-%sx', str_replace( '.', '-', $font_size ) );
@@ -661,7 +613,10 @@ class Page_Layouts {
 
             $atts         = genesis_attr( 'page-section', $atts );
 
-            $output       = sprintf( '<div %s>%s%s</div>', $atts, $background, $content );
+            $wrap_open    = genesis_structural_wrap( 'page-section', 'open', false );
+            $wrap_close   = genesis_structural_wrap( 'page-section', 'close', false );
+
+            $output       = sprintf( '<div %s>%s%s%s%s</div>', $atts, $wrap_open, $background, do_shortcode( $content ), $wrap_close );
         }
 
         return $output;

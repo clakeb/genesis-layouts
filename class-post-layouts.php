@@ -174,6 +174,8 @@ class Post_Layouts {
             'image_size'        => 'large',
             'show_thumbnail'    => true,
             'link_thumbnail'    => true,
+            'default_thumbnail' => false,
+            'thumbnail_format'  => 'html',
             'show_title'        => true,
             'link_title'        => true,
 
@@ -231,7 +233,6 @@ class Post_Layouts {
 
         // Thumbnail
         remove_action( 'genesis_entry_content', 'genesis_do_post_image', 8);
-
         if ( $show_thumbnail) {
             add_action( $elements['thumbnail'][0], array( $this, 'genesis_do_post_image' ), $elements['thumbnail'][1] );
         }
@@ -542,27 +543,35 @@ class Post_Layouts {
         $size = ( is_array( $size ) ) ? 'custom' : $size;
 
         $img_args = array(
-            'format'   => 'html',
+            'format'   => $thumbnail_format,
             'size'     => $size,
             'context'  => is_singular() ? 'single' : 'archive',
             'attr'     => genesis_parse_attr( 'entry-image' ),
-            'fallback' => false,
+            'fallback' => $default_thumbnail,
         );
 
         $img = genesis_get_image( $img_args );
+        $fallback = $img_args['fallback'];
 
-        if ( $_wp_additional_image_sizes && array_key_exists( $size, $_wp_additional_image_sizes ) ) {
-            $width = 'width:' . $_wp_additional_image_sizes[ $size ]['width'] . 'px;';
+        if (
+            ( $fallback && $thumbnail_format == 'html' && $img == $fallback['html'] )
+            || ( $fallback && $thumbnail_format == 'url' && $img == $fallback['url'] )
+        ) {
+
         } else {
-            $width = '';
+            if ( $_wp_additional_image_sizes && array_key_exists( $size, $_wp_additional_image_sizes ) ) {
+                $width = 'width:' . $_wp_additional_image_sizes[ $size ]['width'] . 'px;';
+            } else {
+                $width = '';
+            }
+
+            $background_img = sprintf( ' background-image:url(%s);', wp_get_attachment_image_src( genesis_get_image_id(), 'full' )[0] );
+            $style = sprintf( ' style="%s"', $width );
+
+            $pattern = '/(<img[^>]*class=\"([^>]*?)\"[^>]*>)/i';
+            $replacement = '<div class="content-image $2 size-' . $size . '"' . $style . '>$1<div class="blur-backdrop" style="' . $background_img . '""></div></div>';
+            $img = preg_replace( $pattern, $replacement, $img );
         }
-
-        $background_img = sprintf( ' background-image:url(%s);', wp_get_attachment_image_src( genesis_get_image_id(), 'full' )[0] );
-        $style = sprintf( ' style="%s"', $width );
-
-        $pattern = '/(<img[^>]*class=\"([^>]*?)\"[^>]*>)/i';
-        $replacement = '<div class="content-image $2 size-' . $size . '"' . $style . '>$1<div class="blur-backdrop" style="' . $background_img . '""></div></div>';
-        $img = preg_replace( $pattern, $replacement, $img );
 
         if ( ! empty( $img ) ) {
             do_action( 'genesis_custom_before_entry_thumbnail_wrap' );
@@ -586,6 +595,7 @@ class Post_Layouts {
             echo '</div>';
 
             do_action( 'genesis_custom_after_entry_thumbnail_wrap' );
+
         }
     }
 
