@@ -125,7 +125,7 @@ class Page_Layouts {
         } else if ( $var_type == 'variable' ) {
             $var = $var;
         } else if ( $var_type == 'post_property' ) {
-            $var = $post->$var;
+            $var = ( $post ) ? $post->$var : false;
         }
 
         if ( $operator == "==" ) {
