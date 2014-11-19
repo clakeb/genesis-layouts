@@ -18,7 +18,7 @@ class Loop_Layouts {
             add_filter( 'custom_post_layouts', array( $this, 'custom_post_layouts' ), 10000 );
 
             if ( function_exists( 'get_field' ) ) {
-                include_once( dirname( __FILE__ ) . '\field-groups.php' );
+                include_once( dirname( __FILE__ ) . '/field-groups.php' );
                 add_filter( 'custom_page_layouts', array( $this, 'custom_page_layouts_defaults' ), 5 );
                 add_filter( 'custom_page_layouts', array( $this, 'custom_page_layouts' ), 10000 );
             }
