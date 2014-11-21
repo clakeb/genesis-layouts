@@ -345,6 +345,13 @@ if ( function_exists( 'register_field_group' ) ) :
                     'value'    => 'page',
                 ),
             ),
+            array(
+                array(
+                    'param'    => 'options_page',
+                    'operator' => '==',
+                    'value'    => 'acf-options-page-defaults',
+                ),
+            ),
         ),
         'menu_order'            => 0,
         'position'              => 'normal',
