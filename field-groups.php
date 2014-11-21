@@ -273,6 +273,32 @@ if ( function_exists( 'register_field_group' ) ) :
             'library'       => 'all',
         ),
         array(
+            'key'               => 'field_bfV7ghdyzJ1G0A9',
+            'label'             => 'Site Logo Image',
+            'name'              => 'site_logo_src',
+            'prefix'            => '',
+            'type'              => 'image',
+            'instructions'      => '',
+            'required'          => 0,
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_3JCM48XKp6i1HUR',
+                        'operator' => '==',
+                        'value' => '1',
+                    ),
+                ),
+            ),
+            'wrapper' => array(
+                'width' => '33.3334',
+                'class' => '',
+                'id' => '',
+            ),
+            'return_format' => 'url',
+            'preview_size'  => 'thumbnail',
+            'library'       => 'all',
+        ),
+        array(
             'key'               => 'field_yMT2aDQpfLerit7',
             'label'             => 'Footer Widgets',
             'name'              => 'footer_widgets',
